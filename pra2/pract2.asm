@@ -12,7 +12,7 @@
 DATOS SEGMENT
     MATRIZ DB 127, -3, 2, 3, 127 ,5, 2, 3, 127;
     SALIDA DB 6 DUP(32), 13, 10, '$'
-    NUMEROS DB 9 DUP(?)
+    NUMERO DB 4 DUP(0)
     ERRORMSG DB "Error: Overflow", 13, 10, '$'
 DATOS ENDS
 ;**************************************************************************
@@ -142,10 +142,27 @@ TOASCII PROC NEAR
 TOASCII ENDP
 
 ;_______________________________________________________________
-; SUBRUTINA PARA LEER 9 NUMEROS DE TECLADO
-; ENTRADA = CX
-; SALIDA = TEXTO EN MEMORIA
+; SUBRUTINA PARA TRANSFORMAR UN VALOR ASCII EN NUMERICO
+; ENTRADA = TEXTO EN MEMORIA - VARIABLE NUMERO
+; SALIDA = AX
 ;_______________________________________________________________
+TONUM PROC NEAR
+    MOV DL, 10
+    MOV AX, NUMERO[1]
+    SUB AX, 30H
+    MUL DL
+    ADD AX, NUMERO[2]
+    SUB AX, 30H
+    MUL DL
+    ADD AX, NUMERO[3]
+    SUB AX, 30H
+    CMP NUMERO[0], '-'
+    JNE ENDTONUM
+    NEG AX
+    ENDTONUM:
+    RET
+TONUM ENDP
+
 
 ; FIN DEL SEGMENTO DE CODIGO
 CODE ENDS
