@@ -26,7 +26,7 @@ void decodeBarCode(unsigned char* in_barCodeASCII, unsigned int* countryCode, un
 ///// -------------------------- MAIN ------------------------------ /////
 //////////////////////////////////////////////////////////////////////////
 int main( void ){
-	char barCodeStr[14],barCodeStrCorregido[14];
+	char barCodeStr[14], barCodeStrCorregido[14];
 	unsigned char barCodeDigits[13];
 	unsigned int  countryCode, companyCode;
 	unsigned long productCode;
@@ -41,19 +41,19 @@ int main( void ){
 	printf("- Codigo de Pais - %u -\n",countryCode);
 	printf("- Codigo de Empresa - %u -\n",companyCode);
 	printf("- Codigo de Producto - %lu -\n",productCode);
-	printf("- Codigo de Control - %c -\n",controlDigit);
+	printf("- Codigo de Control - %u -\n",controlDigit);
 
 	controlDigitCheck = computeControlDigit(barCodeStr);
 
 	if(controlDigit != controlDigitCheck){
-		printf("Error en codigo de control. Leido %c vs Calculado %c\n", controlDigit, controlDigitCheck);
-		printf("Corrigiendo codigo de barras...\n");
-		//createBarCode(countryCode,companyCode,productCode,controlDigitCheck,barCodeStrCorregido);
-        printf("Codigo de barras corregido es: NONE");
-		//printf("Codigo de barras corregido es: %s\n",barCodeStrCorregido);
+		printf("Error en codigo de control. Leido %u vs Calculado %u\n", controlDigit, controlDigitCheck);
+		//printf("Corrigiendo codigo de barras...\n");
+		createBarCode(countryCode,companyCode,productCode,controlDigitCheck,barCodeStrCorregido);
+        //printf("Codigo de barras corregido es: NONE");
+		printf("Codigo de barras corregido es: %s\n",barCodeStrCorregido);
 	}
 	else{
-		printf("Codigo de control %c es correcto para el codigo de barras %s\n", controlDigit, barCodeStr);
+		printf("Codigo de control %u es correcto para el codigo de barras %s\n", controlDigit, barCodeStr);
 	}
 
 

@@ -81,8 +81,6 @@ _computeControlDigit PROC FAR
     SUB AX, 10
     NEG AX
 
-    ADD AX, 30H
-
 	FIN	:
     POP DX
     POP CX
@@ -99,12 +97,13 @@ _decodeBarCode PROC FAR
 ; PRESERVANDO VALORES DE LOS REGISTROS
     PUSH DS
     PUSH BX
+    PUSH DI
+    PUSH CX
+    PUSH AX
 
     MOV BX, 6[BP]
     MOV DS, 8[BP] ; COLOCAMOS EL SEGEMENTO EN LA DIRECCION DEL BARCODE
 
-    PUSH DI
-    PUSH CX
     MOV CX, 3 ; LONGITUD CODIGO PAIS
     CALL TONUM ; OBTENEMOS EL VALOR NUMERICO DEL CODIGO DE PAIS
 
@@ -127,7 +126,7 @@ _decodeBarCode PROC FAR
     MOV BX, 6[BP]
     MOV DS, 8[BP]
     ADD BX, 7 ; SUMAR OFFSET DE LO YA COPIADO
-    ADD CX, 5 ; LONGITUD CODIGO PRODUCTO
+    MOV CX, 5 ; LONGITUD CODIGO PRODUCTO
     CALL TONUM
 
     MOV BX, 18[BP]
@@ -141,12 +140,14 @@ _decodeBarCode PROC FAR
     ADD BX, 12 ; SUMAR OFFSET DE LO YA COPIADO
 
     MOV AL, [BX]
+    SUB AL, 30H
 
     MOV BX, 22[BP]
     MOV DS, 24[BP]
 
     MOV [BX], AL
 
+    POP AX
     POP CX
     POP DI
     POP BX
@@ -163,6 +164,9 @@ _decodeBarCode ENDP
 ; SALIDA = DX:AX
 ;_______________________________________________________________
 TONUM PROC NEAR
+    PUSH DI
+    PUSH BX
+
     MOV AX, 0
     MOV DX, 0
     SIGUETONUM:
@@ -171,11 +175,16 @@ TONUM PROC NEAR
     MOV DI, [BX]
     AND DI, 00FFH
     ADD AX, DI
+    JNC NOCARRY
+    INC DX
+    NOCARRY:
     SUB AX, 30H
     INC BX
     DEC CX
     JNZ SIGUETONUM
 
+    POP BX
+    POP DI
     RET
 TONUM ENDP
 
