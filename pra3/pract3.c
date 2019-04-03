@@ -47,9 +47,8 @@ int main( void ){
 
 	if(controlDigit != controlDigitCheck){
 		printf("Error en codigo de control. Leido %u vs Calculado %u\n", controlDigit, controlDigitCheck);
-		//printf("Corrigiendo codigo de barras...\n");
+		printf("Corrigiendo codigo de barras...\n");
 		createBarCode(countryCode,companyCode,productCode,controlDigitCheck,barCodeStrCorregido);
-        //printf("Codigo de barras corregido es: NONE");
 		printf("Codigo de barras corregido es: %s\n",barCodeStrCorregido);
 	}
 	else{

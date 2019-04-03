@@ -10,58 +10,53 @@ PRAC3B SEGMENT BYTE PUBLIC 'CODE'
 PUBLIC _createBarCode
 ASSUME CS: PRAC3B
 
+ASCIIOFFSET EQU 30H
+RETSZ       EQU 14
+PAISLEN     EQU 3
+EMPRLEN     EQU 4
+PRODLEN     EQU 5
+SHRMASK     EQU 00FFH
+
 _createBarCode PROC FAR
     PUSH BP
     MOV BP, SP
 
 	; PRESERVANDO VALORES DE LOS REGISTROS
-    PUSH DS
-    PUSH BX
-    PUSH CX
-    PUSH DX
-    PUSH DI
-    PUSH AX
+    PUSH DS BX CX DX DI AX
 
-    MOV BX, [BP+16]
-    MOV DS, [BP+18] ;Colocamos el segmento al comienzo de la cadena de salida
+    LDS BX, [BP+16] ;Colocamos el segmento al comienzo de la cadena de salida
 
-    MOV DI, 14
+    MOV DI, RETSZ
     CALL INITSTR
 
     MOV AX, [BP+6] ;Guardamos el codigo de pais en AX
     MOV DX, 0
-    MOV DI, 3
+    MOV DI, PAISLEN
     CALL TOASCII
 
     ADD BX, DI
     MOV AX, [BP+8]
-    MOV DI, 4
+    MOV DI, EMPRLEN
     CALL TOASCII
 
     ADD BX, DI
     MOV AX, [BP+10]
     MOV DX, [BP+12]
-    MOV DI, 5
+    MOV DI, PRODLEN
     CALL TOASCII
 
     ADD BX, DI
     MOV AX, [BP+14]
-    AND AX, 00FFH
+    AND AX, SHRMASK
     MOV DX, 0
     MOV DI, 1
     CALL TOASCII
 
 	FIN	:
-    POP AX
-    POP DI
-    POP DX
-    POP CX
-    POP BX
-    POP DS
+    POP AX DI DX CX BX DS
     POP BP
     RET
 _createBarCode ENDP
-
 
 ;_______________________________________________________________
 ; SUBRUTINA PARA TRANSFORMAR UN VALOR NUMERICO EN ASCII
@@ -70,7 +65,7 @@ _createBarCode ENDP
 ;           DI - TAMAÑO DE LA CADENA
 ; SALIDA = TEXTO EN MEMORIA
 ;_______________________________________________________________
-TOASCII PROC NEAR
+TOASCII PROC FAR
     PUSH CX
     PUSH DX
     PUSH AX
@@ -78,7 +73,7 @@ TOASCII PROC NEAR
     MOV CX, 10 ; HAGO SET DEL DIVISOR
     DIVIDE:
     DIV CX ; DIVIDE DX:AX ENTRE 10
-    ADD DX, 30H ; TRANSFORMAMOS EL VALOR NUMERICO DE DX EN SU ASCII
+    ADD DX, ASCIIOFFSET ; TRANSFORMAMOS EL VALOR NUMERICO DE DX EN SU ASCII
     MOV DS:[BX][DI-1], DL ; GUARDAMOS EL CARACTER EN MEMORIA
     MOV DX, 0 ; VOLVEMOS A PONER DX A 0
     CMP AX, 0 ; SI EL COCIENTE ES 0 TERMINAMOS
@@ -99,7 +94,7 @@ TOASCII ENDP
 ;           DI - TAMAÑO DE LA CADENA
 ; SALIDA = TEXTO EN MEMORIA
 ;_______________________________________________________________
-INITSTR PROC NEAR
+INITSTR PROC FAR
     PUSH BX
     PUSH DI
     DEC DI
