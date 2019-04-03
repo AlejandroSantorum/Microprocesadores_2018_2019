@@ -6,6 +6,11 @@
  * Practica 3
  * Codigos de Barras
  *
+ *   Autores:
+ *       Rafael Sanchez Sanchez - rafael.sanchezs@estudiante.uam.es
+ *       Alejandro Santorum Varela - alejandro.santorum@estudiante.uam.es
+ *   Pareja: 16
+ *   Practica 3 Sistemas Basados en Microprocesadores
  *********************************************************************/
 
 #include <stdio.h>
