@@ -3,10 +3,14 @@ all: p4a.exe
 p4a.exe: p4a.obj
 	tlink /v p4a.obj
 
+com: p4a.obj
+	tlink /t /v p4a.obj
+
 p4a.obj: p4a.asm
-	tasm /zi /m2 p4a.asm
+	tasm /zi p4a.asm
 
 clean:
 	del p4a.obj
 	del p4a.exe
 	del p4a.map
+	del p4a.com
