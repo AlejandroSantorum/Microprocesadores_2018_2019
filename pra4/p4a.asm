@@ -5,18 +5,14 @@
 ;   Pareja: 16
 ;   Practica 4 Sistemas Basados en Microprocesadores
 ;**************************************************************************
-EXTRA SEGMENT
-
-EXTRA ENDS
-
 CODIGO SEGMENT
-ASSUME CS: CODIGO, ES:EXTRA
+ASSUME CS: CODIGO
 ORG 256
 INICIO:
 JMP INSTALADOR
 ;VARIABLES GLOBALES
 ;MODULE      DB 6
-MTXCMP       DB "VWXYZ0123456789ABCDEFGHIJKLMNOPQRSTU"
+MTXCMP       DB "VWXYZ0123456789ABCDEFGHIJKLMNOPQRSTU$"
 CODED        DB 64*3 DUP(?), '$'
 DECODED      DB 64 DUP(?), '$'
 DRIVERSTAT   DB "DRIVER: $"
@@ -55,7 +51,7 @@ POLICHAR ENDP
 ;  SALIDA  : NINGUNA.
 ;_____________________________________________________
 POLICODE PROC FAR
-    PUSH AX BX DX BP SI
+    PUSH DS AX BX DX BP SI
     MOV BP, DX
     MOV SI, 0
     MOV BX, 0
@@ -72,14 +68,16 @@ POLICODE PROC FAR
     CMP BYTE PTR DS:[BP][SI], '$'
     JNE BUCLECOD
 
-    ;MOV CODED[BX-1], 10
-    ;MOV CODED[BX], '$'
-    MOV AH, 9H
+    MOV CODED[BX], '$'
+
+    MOV BX, CS
+    MOV DS, BX
     LEA DX, CODED
-    ;MOV DX, OFFSET CODED ; LEA DX, CODED
+
+    MOV AH, 9H
     INT 21H
 
-    POP SI BP DX BX AX
+    POP SI BP DX BX AX DS
     RET
 POLICODE ENDP
 
@@ -113,7 +111,7 @@ DECODECHAR ENDP
 ;  SALIDA  : NINGUNA.
 ;_____________________________________________________
 POLIDECODE PROC FAR
-    PUSH AX BX DX BP SI
+    PUSH DS AX BX DX BP SI
     MOV BP, DX
     MOV SI, 0
     MOV BX, 0
@@ -127,14 +125,16 @@ POLIDECODE PROC FAR
     CMP BYTE PTR DS:[BP][SI-1], '$'
     JNE BUCLEDECOD
 
-    ;MOV DECODED[BX], 10
-    ;MOV DECODED[BX+1], '$'
-    MOV AH, 9H
+    MOV DECODED[BX], '$'
+
+    MOV BX, CS
+    MOV DS, BX
     LEA DX, DECODED
-    ;MOV DX, OFFSET DECODED ; LEA DX, CODED
+
+    MOV AH, 9H
     INT 21H
 
-    POP SI BP DX BX AX
+    POP SI BP DX BX AX DS
     RET
 POLIDECODE ENDP
 
@@ -142,7 +142,7 @@ POLIDECODE ENDP
 ;   PROGRAMA PRINCIPAL DE LA RUTINA DE SERVICIO
 ;
 ;   ENTRADA: AH - ELIGE CODIFICACIÓN O DECODIFICACIÓN
-;            DX - CADENA A CODIFICAR O DECODIFICAR
+;            DS:DX - CADENA A CODIFICAR O DECODIFICAR
 ;_____________________________________________________
 PROGRAMA PROC
     CMP AH, 10H
@@ -150,6 +150,7 @@ PROGRAMA PROC
     CMP AH, 11H
     JNE FIN
     CALL POLIDECODE
+    JMP FIN
     CODIFICA:
     CALL POLICODE
     FIN:
