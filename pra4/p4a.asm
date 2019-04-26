@@ -21,6 +21,7 @@ UNINSTALSTAT DB "DESINSTALADO", 10, 13, "$"
 INFORM       DB "NUMERO DE PAREJA: 16", 10, 13
              DB "PAREJA: RAFAEL SANCHEZ, ALEJANDRO SANTORUM", 10, 13
              DB "PARA INSTALAR EJECUTA CON /i Y PARA DESINSTALAR CON /d$"
+EMPTY        DB "$"
 SEM          DB 1
 CONT         DB 0
 
@@ -32,7 +33,7 @@ CONT         DB 0
 ; QUE SE ENCUENTRA EN DS:DX
 ;___________________________________
 IMPRIMIR PROC FAR
-    PUSH DX DI BX AX
+    PUSH DS DX DI BX AX
     MOV DI, 0
     MOV BX, DX
 
@@ -42,10 +43,10 @@ IMPRIMIR PROC FAR
 
     NOTALLOWED:
 
-    MOV DL, 20H
-    MOV AH, 2
-    INT 21H
-    MOV DL, 8
+    MOV AX, CS
+    MOV DS, AX
+    LEA DX, EMPTY
+    MOV AH, 9
     INT 21H
 
     CMP SEM, 0
@@ -56,14 +57,11 @@ IMPRIMIR PROC FAR
     INT 21H
     INC DI
 
-    ;CMP CX, 0
-    ;JE PRINT
-
     MOV SEM, 0
     JMP PRINT
 
     FINPRINT:
-    POP AX BX DI DX
+    POP AX BX DI DX DS
     RET
 IMPRIMIR ENDP
 
@@ -187,6 +185,7 @@ POLIDECODE ENDP
 ;            DS:DX - CADENA A CODIFICAR O DECODIFICAR
 ;_____________________________________________________
 PROGRAMA PROC
+    MOV SEM, 1
     CMP AH, 10H
     JE CODIFICA
     CMP AH, 11H
