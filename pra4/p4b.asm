@@ -32,6 +32,10 @@ NEWLINE PROC
 NEWLINE ENDP
 
 INICIO PROC
+    IN AX, 21H
+    OR AX, 1
+    OUT 21H, AX
+
     MOV AX, DATOS
     MOV DS, AX
 
@@ -47,6 +51,7 @@ INICIO PROC
 
     LEA DX, TEMP
     MOV AH, 10H
+    ;MOV CX, 0
     INT 57H
 
     CALL NEWLINE
@@ -60,9 +65,14 @@ INICIO PROC
 
     LEA DX, TEMP2
     MOV AH, 11H
+    ;MOV CX, 0
     INT 57H
 
     CALL NEWLINE
+
+    IN AX, 21H
+    AND AX, 0FFFEH
+    OUT 21H, AX
 
     MOV AX, 4C00H
     INT 21H
