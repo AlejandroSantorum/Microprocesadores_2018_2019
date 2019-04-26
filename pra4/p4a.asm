@@ -57,6 +57,9 @@ IMPRIMIR PROC FAR
     INT 21H
     INC DI
 
+    CMP CX, 0
+    JE PRINT
+
     MOV SEM, 0
     JMP PRINT
 
@@ -256,11 +259,17 @@ INSTALADOR PROC
         MOV ES:[57H*4+2], BX ; OFFSET SEGMENTO DE CODIGO
     STI
 
+    IN AX, 21H
+    OR AX, 1
+    OUT 21H, AX
+
     MOV AX, OFFSET NUEVO1C
-    CLI
-        MOV ES:[1CH*4], AX
-        MOV ES:[1CH*4+2], BX
-    STI
+    MOV ES:[1CH*4], AX
+    MOV ES:[1CH*4+2], BX
+
+    IN AX, 21H
+    AND AX, 0FFFEH
+    OUT 21H, AX
 
     FIN_INSTALA:
     MOV DX, OFFSET INSTALADOR

@@ -1,10 +1,16 @@
-all: p4a.com p4b.exe
+all: p4a.com p4b.exe p4c.exe
 
 p4b.exe: p4b.obj
 	tlink /v p4b.obj
 
 p4b.obj: p4b.asm
 	tasm /zi p4b.asm
+
+p4c.exe: p4c.obj
+	tlink /v p4c.obj
+
+p4c.obj: p4c.asm
+	tasm /zi p4c.asm
 
 p4a.com: p4a.obj
 	tlink /t /v p4a.obj
@@ -16,3 +22,9 @@ clean:
 	del p4a.obj
 	del p4a.map
 	del p4a.com
+	del p4b.obj
+	del p4b.map
+	del p4b.exe
+	del p4c.obj
+	del p4c.map
+	del p4c.exe
