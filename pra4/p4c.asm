@@ -48,6 +48,9 @@ STRCMP PROC FAR
     RET
 STRCMP ENDP
 
+;_____________________________________________________
+;  RECIBE UNA CADENA POR TECLADO EN LA VARIABLE INTRO
+;_____________________________________________________
 GETS PROC FAR
     PUSH DX AX
     MOV AH, 0AH
@@ -57,6 +60,10 @@ GETS PROC FAR
     RET
 GETS ENDP
 
+;_____________________________________________________
+;  ENTRADA : DS:DX DIRECCIÓN DE LA STRING A IMPRIMIR
+;  SALIDA  : NINGUNA.
+;_____________________________________________________
 PRINTF PROC FAR
     PUSH AX
     MOV AH, 09H
@@ -65,6 +72,12 @@ PRINTF PROC FAR
     RET
 PRINTF ENDP
 
+;_____________________________________________________
+;  ENTRADA : DS:BX DIRECCIÓN DE LA STRING A PARSEAR
+;  SALIDA  : NINGUNA.
+;
+;  PARSEA UNA STRING Y CAMBIA SU CHAR TERMINAL POR 13
+;_____________________________________________________
 PARSE$ PROC FAR
     PUSH DI
     MOV DI, 0

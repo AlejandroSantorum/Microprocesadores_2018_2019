@@ -23,6 +23,9 @@ DATOS ENDS
 CODIGO SEGMENT
 ASSUME CS: CODIGO, DS:DATOS
 
+;_____________________________________________________
+;  IMPRIME UNA NUEVA LINEA
+;_____________________________________________________
 NEWLINE PROC
     PUSH DX AX
     LEA DX, LINEFEED

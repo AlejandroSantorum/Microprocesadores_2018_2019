@@ -196,6 +196,9 @@ PROGRAMA PROC
     IRET
 PROGRAMA ENDP
 
+;_____________________________________________________
+;  NUEVA RUTINA DE INTERRUPCIÓN 1CH
+;_____________________________________________________
 NUEVO1C PROC
     CMP CONT, 19
     JNE FIN1C
