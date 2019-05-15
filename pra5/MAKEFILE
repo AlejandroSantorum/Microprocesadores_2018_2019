@@ -1,4 +1,4 @@
-all: connect4.exe driver_c4.com
+all: connect4.exe driverc4.com
 
 connect4.exe: connect4.obj
 	tlink /v connect4.obj
@@ -6,17 +6,17 @@ connect4.exe: connect4.obj
 connect4.obj: connect4.asm
 	tasm /zi connect4.asm
 
-driver_c4.com: driver_c4.obj
-	tlink /t /v driver_c4.obj
+driverc4.com: driverc4.obj
+	tlink /t /v driverc4.obj
 
-driver_c4.obj: driver_c4.asm
-	tasm /zi driver_c4.asm
+driverc4.obj: driverc4.asm
+	tasm /zi driverc4.asm
 
 
 clean:
 	del connect4.obj
 	del connect4.map
 	del connect4.exe
-	del driver_c4.obj
-	del driver_c4.map
-	del driver_c4.com
+	del driverc4.obj
+	del driverc4.map
+	del driverc4.com
