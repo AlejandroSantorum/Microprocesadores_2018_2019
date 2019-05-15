@@ -1,13 +1,22 @@
-all: pract5.exe
+all: connect4.exe driver_c4.com
 
-pract5.exe: pract5.obj
-	tlink /v pract5.obj
+connect4.exe: connect4.obj
+	tlink /v connect4.obj
 
-pract5.obj: pract5.asm
-	tasm /zi pract5.asm
+connect4.obj: connect4.asm
+	tasm /zi connect4.asm
+
+driver_c4.com: driver_c4.obj
+	tlink /t /v driver_c4.obj
+
+driver_c4.obj: driver_c4.asm
+	tasm /zi driver_c4.asm
 
 
 clean:
-	del pract5.obj
-	del pract5.exe
-	del pract5.map
+	del connect4.obj
+	del connect4.map
+	del connect4.exe
+	del driver_c4.obj
+	del driver_c4.map
+	del driver_c4.com
