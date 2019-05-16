@@ -22,6 +22,7 @@ DATOS SEGMENT
     INVALID_COL_ERR DB "Error: la columna introducida no es valida. Intentelo de nuevo.",13,10, "$"
     FULL_COL_ERR DB "Error: la columna introducida esta llena. Seleccione otra.",13,10,"$"
     WINNER_STR DB "Felicidades, ha ganado el jugador $"
+    DRAW_STR DB "Empate. Bien jugado por parte de ambos jugadores"
 	LINE_FEED DB 13,10,'$'
 
     ;; FOR THE NEXT VARIABLES IS IMPORTANT TO KEEP IN MIND THE BOARD OFFSETS:
@@ -366,6 +367,39 @@ CHECK_WINNER PROC FAR
     RET
 CHECK_WINNER ENDP
 
+;_____________________________________________________
+;  INPUT: None
+;  OUTPUT : AH -> 1 IF THE GAME IS TIED, 0 OTHERWISE
+;_____________________________________________________
+CHECK_DRAW PROC FAR
+    ; == CHECK_DRAW PSEUDOCODE == ;
+    ; FOR COL IN RANGE(7):
+        ; IF HEIGHTS[COL] != 5: (maximum height = 5 = full column)
+            ; RETURN NOT_TIED
+    ; RETURN TIED
+    PUSH BX CX
+    MOV BX, 0
+    LOOP_DRAW:
+    CMP BX, 7
+    JE DRAW
+    MOV CL, DS:HEIGHTS[BX]
+    CMP CL, 5 ; CHECKING IT IS NOT FULL
+    JL NOT_DRAW
+    INC BX
+    JMP LOOP_DRAW
+
+    DRAW:
+    MOV AH, 1
+    JMP END_CHECK_DRAW
+
+    NOT_DRAW:
+    MOV AH, 0
+
+    END_CHECK_DRAW:
+    POP CX BX
+    RET
+CHECK_DRAW ENDP
+
 
 INICIO PROC FAR
     ;INITIALIZING SEGMENTS
@@ -376,6 +410,25 @@ INICIO PROC FAR
     MOV AX, EXTRA
     MOV ES, AX
     MOV SP, 40h
+
+    ;;;;;; SETTING UP RTC ;;;;;;;;;;;
+    ;; REGISTER A
+    MOV BL, 00101111b ; UIP=0 DV=010 RS=1111
+    MOV AL, 0AH
+    OUT 70H, AL
+    MOV AL, BL
+    OUT 71H, AL
+    ;; REGISTER B
+    MOV AL, 0BH
+    OUT 70H, AL
+    IN AL, 71H ; READING CURRENT REGISTER B VALUE
+    MOV BL, AL
+    OR BL, 01000000b ; PIE = 1 (Periodic interruptions)
+    MOV AL, 0BH
+    OUT 70H, AL
+    MOV AL, BL
+    OUT 71H, AL ; WRITING NEW REGISTER B VALUE (Activating periodic int)
+
     ; PRINTING WELCOME
     MOV DX, OFFSET WELCOME_STR
     CALL PRINTF
@@ -416,14 +469,12 @@ INICIO PROC FAR
 	MOV AX, 0
 	MOV ES, AX
     LES BX, ES:[70H*4]
-	CLI
     CMP WORD PTR ES:[BX-6], 1
-	STI
     JE MOVE_RANDOMLY
     ; CHECKS IF A KEY IS PRESSED
     MOV AH, 01H
     INT 16H
-    JNZ GET_COL
+    JZ GET_COL
     ; PRESSED! => GETTING THE KEYSTROKE AND CLEARING BUFFER
     MOV AH, 00H
     INT 16H
@@ -435,8 +486,8 @@ INICIO PROC FAR
     JB PRINT_INVALID_COL_ERR ; ERROR
     ; GETTING COLUMN AS AN INTEGER
     SUB AL, 30H
-    CALL CHECK_COL
-    CMP AH, 0
+    CALL CHECK_COL ; CHECKING THE COL IS AVAILABLE
+    CMP AH, 0 ; IF 0 => NOT AVAILABLE => PRINTING ERROR AND ASKING AGAIN FOR A COL TO THE SAME PLAYER
     JE PRINT_FULL_COL_ERR ; ERROR
     INSERT_PIECE_LABEL:
     ; INTRODUCING PIECE
@@ -445,6 +496,10 @@ INICIO PROC FAR
     CALL CHECK_WINNER
     CMP AH, 1
     JE PRINT_WINNER ; FINISHED
+    ; CHECKING IF THE GAME IS TIED
+    CALL CHECK_DRAW
+    CMP AH, 1
+    JE PRINT_DRAW
     ; CHANGING PLAYER TURN
     XOR TURN, 1
     JMP MAIN_LOOP
@@ -485,6 +540,12 @@ INICIO PROC FAR
     ADD DL, 31H ; ADDING 30H TO CONVERT TO ASCII AND +1 TO CHANGE TURN 0 = PLAYER 1, TURN 1 = PLAYER 2
     MOV AH, 2
     INT 21h
+    JMP FIN
+    PRINT_DRAW:
+    MOV DX, OFFSET BOARD
+    CALL PRINTF
+    MOV DX, OFFSET DRAW_STR
+    CALL PRINTF
 
     FIN:
     MOV AX, 4C00H

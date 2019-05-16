@@ -71,25 +71,6 @@ INSTALLER PROC FAR
     ;CMP WORD PTR ES:[70H*4+2], 0 ; CHECKS IF IT'S FREE
     ;JNE END_INSTALLER
 
-    ;;;;;; SETTING UP RTC ;;;;;;;;;;;
-    ;; REGISTER A
-    MOV BL, 00101111b ; UIP=0 DV=010 RS=1111
-    MOV AL, 0AH
-    OUT 70H, AL
-    MOV AL, BL
-    OUT 71H, AL
-    ;; REGISTER B
-    MOV AL, 0BH
-    OUT 70H, AL
-    IN AL, 71H ; READING CURRENT REGISTER B VALUE
-    MOV BL, AL
-    OR BL, 01000000b ; PIE = 1 (Periodic interruptions)
-    MOV AL, 0BH
-    OUT 70H, AL
-    MOV AL, BL
-    OUT 71H, AL ; WRITING NEW REGISTER B VALUE (Activating periodic int)
-
-
     MOV AX, OFFSET DRIVER_MAIN
     MOV BX, CS
     CLI                 ; INSTALLING
